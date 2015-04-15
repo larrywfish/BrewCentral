@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Brew Central</string>
+    <string name="title_section1">Commercial Beers</string>
+    <string name="title_section2">Recipes</string>
+    <string name="title_section3">Calculators</string>
+    <string name="title_section4">Inventory</string>
+    <string name="title_section5">Database</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search_hint">Enter Beer or Brewery</string>
+    <string name="search_button_text">Go</string>
+    
+    <!-- Calculators -->
+    <string name="mash_calculator">Mash Calculator</string>
+    <string name="percent_alcohol">% Alcohol</string>
+
+    <!-- Mash Calculator -->
+    <string name="ratioLabel">Water/Grain Ratio:</string>
+    <string name="gristTempLabel">Grist Temperature:</string>
+    <string name="restTempLabel">Target Rest Temperature:</string>
+    <string name="grainWeightLabel">Weight of Grain:</string>
+    <string name="strikeTempLabel">Strike Water Temperature:</string>
+    <string name="strikeWaterLabel">Strike Water Quarts:</string>
+  
+  </resources>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="5dip"
+            >
+    <TableLayout android:layout_width="match_parent"
+                 android:layout_height="wrap_content">
+        <TableRow>
+           <TextView
+                android:id="@+id/ratioLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#0000FF"
+                android:text="@string/ratioLabel" />
+            <EditText
+                android:id="@+id/waterGrainRatioField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="numberDecimal" />
+        </TableRow>
+        <TableRow>
+           <TextView
+                android:id="@+id/gristTempLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#0000FF"
+                android:text="@string/gristTempLabel" />
+
+            <EditText
+                android:id="@+id/gristTemperatureField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number|numberDecimal" />
+
+           </TableRow>
+        <TableRow>
+           <TextView
+                android:id="@+id/restTempLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#0000FF"
+                android:text="@string/restTempLabel" />
+            <EditText
+                android:id="@+id/restTemperatureField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number|numberDecimal" />
+
+           </TableRow>
+        <TableRow>
+           <TextView
+                android:id="@+id/grainWeightLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#0000FF"
+                android:text="@string/grainWeightLabel" />
+           <EditText
+                android:id="@+id/grainWeightField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="numberDecimal" />
+           </TableRow>
+
+        <TableRow>
+           <TextView
+                android:id="@+id/strikeTempLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#0000FF"
+                android:text="@string/strikeTempLabel" />
+          <EditText
+                android:id="@+id/strikeTempResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textColor="#FF0000"
+                android:inputType="numberDecimal" />
+          
+<!--             <TextView -->
+<!--                 android:id="@+id/strikeTempResult" -->
+<!--                 android:layout_width="wrap_content" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 android:textStyle="bold" -->
+<!--                 android:textColor="#FF0000" -->
+<!--                 android:layout_gravity="center_vertical|right" /> -->
+           </TableRow>
+
+        <TableRow>
+           <TextView
+                android:id="@+id/strikeWaterLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#0000FF"
+                android:text="@string/strikeWaterLabel" />
+          <EditText
+                android:id="@+id/strikeWaterResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textColor="#FF0000"
+                android:inputType="numberDecimal" />
+<!--             <TextView -->
+<!--                 android:id="@+id/strikeWaterResult" -->
+<!--                 android:layout_width="wrap_content" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 android:textStyle="bold" -->
+<!--                 android:textColor="#FF0000" -->
+<!--                 android:layout_gravity="center_vertical|right" /> -->
+           </TableRow>
+</TableLayout>
+
+</ScrollView>
