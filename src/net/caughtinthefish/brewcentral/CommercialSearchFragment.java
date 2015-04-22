@@ -18,11 +18,10 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,13 +29,14 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
 
 /**
  * Fragment for the Commercial Beer Search tool.
@@ -45,8 +45,8 @@ public class CommercialSearchFragment extends Fragment implements
         OnClickListener, OnEditorActionListener {
 
     private static final String ARG_NAME = "name";
-    private EditText searchText;
-    private ListView resultsView;
+    private EditText mSearchEditText;
+    private ListView mResultsListView;
     private String mResults = null;
     private String mName = null;
     private DrawerFragmentListener mListener;
@@ -90,19 +90,34 @@ public class CommercialSearchFragment extends Fragment implements
                 .findViewById(R.id.search_button);
         searchButton.setOnClickListener(this);
 
-        resultsView = (ListView) rootView.findViewById(R.id.results_list);
-        searchText = (EditText) rootView.findViewById(R.id.search_text);
-        searchText.setOnEditorActionListener(this);
+        mResultsListView = (ListView) rootView.findViewById(R.id.results_list);
+        mSearchEditText = (EditText) rootView.findViewById(R.id.search_text);
+        mSearchEditText.setOnEditorActionListener(this);
 
         mResultsAdapter = new ResultsAdapter();
-        resultsView.setAdapter(mResultsAdapter);
+        mResultsListView.setAdapter(mResultsAdapter);
+        mResultsListView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View view, int position,
+                    long arg3) {
+                hideKeyboard();
+                
+                JSONObject beer = mResultsAdapter.getBeer(position);
+                
+                Fragment fragment = new CommercialBeerDetailFragment(beer);
+                FragmentManager fragmentMgr = getActivity().getFragmentManager();
+                fragmentMgr.beginTransaction().replace(R.id.container, fragment)
+                        .addToBackStack(fragment.getTag()).commit();
+            }
+        });
 
         if (savedInstanceState != null) {
             mResults = savedInstanceState.getString("searchResults");
-            if (mResults != null && !mResults.isEmpty()) {
-                displayResults();
-            } 
         }
+        
+        if (mResults != null && !mResults.isEmpty()) {
+            displayResults();
+        } 
 
         return rootView;
     }
@@ -123,14 +138,18 @@ public class CommercialSearchFragment extends Fragment implements
         super.onDetach();
         mListener = null;
     }
+    
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) getActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(mSearchEditText.getWindowToken(),//view.getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 
     @Override
     public boolean onEditorAction(TextView view, int actionId, KeyEvent arg2) {
-        InputMethodManager inputManager = (InputMethodManager) getActivity()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(view.getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
-
+        hideKeyboard();
+        
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
             performSearch();
             return true;
@@ -140,11 +159,7 @@ public class CommercialSearchFragment extends Fragment implements
 
     @Override
     public void onClick(View view) {
-        InputMethodManager inputManager = (InputMethodManager) getActivity()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(view.getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
-
+        hideKeyboard();
         performSearch();
     }
 
@@ -159,13 +174,12 @@ public class CommercialSearchFragment extends Fragment implements
     public void displayResults() {
         JSONObject parser;
         try {
-            String toastStr = new String();
 
             parser = new JSONObject(mResults);
             JSONArray beerList = parser.getJSONArray("data");
             /*
             int count = parser.getInt("totalResults");
-            toastStr += "Total Beers Found = ";
+            String toastStr = new String("Total Beers Found = ");
             toastStr += count;
 
             toastStr += "\nBeers in first page = ";
@@ -180,16 +194,9 @@ public class CommercialSearchFragment extends Fragment implements
             mResultsAdapter.clear();
             for (int ii = 0; ii < beerList.length(); ii++) {
                 JSONObject obj = beerList.getJSONObject(ii);
-                if (ii != 0)
-                    toastStr += "\n";
-
-                mResultsAdapter.add(obj.getString("name"),
-                        obj.getJSONArray("breweries").getJSONObject(0)
-                                .getString("name"));
-
+                mResultsAdapter.add(obj);
             }
 
-            // resultsView.invalidate();
             mResultsAdapter.notifyDataSetChanged();
 
         } catch (JSONException e) {
@@ -201,7 +208,7 @@ public class CommercialSearchFragment extends Fragment implements
     }
 
     private void performSearch() {
-        if (searchText.getText().length() == 0) {
+        if (mSearchEditText.getText().length() == 0) {
             return;
         }
         getActivity().setProgressBarIndeterminateVisibility(true);
@@ -214,7 +221,7 @@ public class CommercialSearchFragment extends Fragment implements
                 try {
                     url += "&q="
                             + URLEncoder.encode(
-                                    searchText.getText().toString(), "UTF-8");
+                                    mSearchEditText.getText().toString(), "UTF-8");
                 } catch (UnsupportedEncodingException e1) {
                     e1.printStackTrace();
                     return null;
@@ -245,17 +252,31 @@ public class CommercialSearchFragment extends Fragment implements
 
     private class ResultsAdapter extends BaseAdapter {
 
-        private List<String> mBeers = new ArrayList<String>();
+        private List<String> mBeerNames = new ArrayList<String>();
         private List<String> mBreweries = new ArrayList<String>();
+        private List<JSONObject> mBeers = new ArrayList<JSONObject>();
 
         public void clear() {
-            mBeers.clear();
+            mBeerNames.clear();
             mBreweries.clear();
+            mBeers.clear();
+        }
+        
+        JSONObject getBeer(int position) {
+            return mBeers.get(position);
         }
 
-        public void add(String beer, String description) {
-            mBeers.add(beer);
-            mBreweries.add(description);
+        public void add(JSONObject beerObj) {
+            try {
+                mBeerNames.add(beerObj.getString("name"));
+                mBreweries.add(beerObj.getJSONArray("breweries")
+                                            .getJSONObject(0)
+                                            .getString("name"));
+                mBeers.add(beerObj);
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -265,7 +286,7 @@ public class CommercialSearchFragment extends Fragment implements
 
         @Override
         public Object getItem(int arg0) {
-            return mBeers.get(arg0);
+            return mBeerNames.get(arg0);
         }
 
         @Override
@@ -285,7 +306,7 @@ public class CommercialSearchFragment extends Fragment implements
             }
 
             TextView tv = (TextView) view.findViewById(R.id.tvTitle);
-            tv.setText(mBeers.get(position));
+            tv.setText(mBeerNames.get(position));
 
             TextView tv2 = (TextView) view.findViewById(R.id.tvDesc);
             tv2.setText(mBreweries.get(position));
